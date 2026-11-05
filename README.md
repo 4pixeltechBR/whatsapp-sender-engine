@@ -28,6 +28,20 @@ O **WhatsApp Sender Engine** foi arquitetado do zero para resolver definitivamen
 
 ---
 
+## 💡 Playwright Nativo vs Evolution API (Por que esta escolha?)
+
+Muitos desenvolvedores questionam se o motor utiliza a **Evolution API** ou bibliotecas baseadas em engenharia reversa de WebSockets (como Baileys / WPPConnect). **A resposta é não.** O WhatsApp Sender Engine foi projetado intencionalmente com automação direta via **Playwright Chromium Stealth**:
+
+| Critério | WhatsApp Sender Engine (Playwright Nativo) | Evolution API / Baileys (WebSockets) |
+| :--- | :--- | :--- |
+| **Infraestrutura** | **Zero.** Executa direto no Windows/Linux com 1 clique (`.bat`). | Exige servidor VPS dedicado, Docker, Redis e PostgreSQL. |
+| **Risco de Banimento** | **Mínimo.** Digitação humana biomecânica WPM + Box-Muller jitter no DOM oficial. | **Elevado.** Disparos instantâneos via socket acionam rapidamente heurísticas de spam da Meta. |
+| **Estabilidade de Conexão** | **Alta.** Usa o WhatsApp Web oficial. Atualizações da Meta não quebram o motor. | **Frágil.** Qualquer alteração no handshake criptográfico da Meta derruba a conexão até sair patch. |
+| **Privacidade de Dados** | **100% Local.** Sessões e contatos nunca saem da sua máquina. | Trafega dados por APIs externas e instâncias em nuvem. |
+| **Custo de Operação** | **Gratuito e ilimitado.** | Custos recorrentes de hospedagem VPS ou mensalidade de SaaS. |
+
+---
+
 ## ✨ Principais Funcionalidades
 
 ### 🛡️ 1. Proteção Anti-Ban Estocástica (Jitter de Box-Muller)
@@ -155,6 +169,55 @@ Abra seu navegador e acesse:
 
 ---
 
+## 📖 Guia de Uso Passo a Passo (Operação)
+
+A operação diária foi desenhada para ser simples, intuitiva e à prova de falhas:
+
+### Passo 1: Iniciar o Aplicativo e Conectar o WhatsApp
+1. Dê dois cliques em `Iniciar_WhatsApp_Sender.bat` (ou execute via terminal).
+2. O painel abrirá automaticamente em seu navegador (`http://127.0.0.1:8765`).
+3. No painel de controle, clique no botão **"Conectar WhatsApp"**.
+4. Uma janela do Chromium abrirá carregando o WhatsApp Web oficial:
+   - **Primeiro Acesso:** Aponte a câmera do seu celular e escaneie o **QR Code**.
+   - **Acessos Subsequentes:** A sessão persistente (`data/session/`) conectará automaticamente sem solicitar novo QR Code.
+
+### Passo 2: Importar sua Lista de Contatos
+1. Na seção **Importar Contatos**, arraste ou selecione seu arquivo `.xlsx`, `.csv` ou `.txt`.
+2. O validador executará a sanitização automática instantânea:
+   - Valida os 67 DDDs oficiais do Brasil.
+   - Corrige o 9º dígito e remove zeros e códigos de operadora (CSPs).
+   - Elimina contatos duplicados mantendo a primeira ocorrência (*First-Wins*).
+3. Visualize na tabela a contagem de contatos válidos, números higienizados e colunas dinâmicas detectadas.
+
+### Passo 3: Compor a Mensagem com Spintax e Variáveis
+1. Digite o texto desejado no campo de mensagem.
+2. **Tags de Personalização:** Insira tags dinâmicas como `{nome}`, `{telefone}` ou qualquer coluna da planilha (ex: `{empresa}`, `{valor}`).
+3. **Spintax Anti-Ban Recursivo:** Alterne saudações e frases para garantir que nenhuma mensagem seja idêntica:
+   ```text
+   {Olá|Oi|Bom dia} {nome}, tudo bem?
+   Aqui é da {empresa}. Temos uma condição especial para você!
+   ```
+4. Para quebras de linha em múltiplos parágrafos, pressione `Enter` normalmente (o motor utiliza `Shift+Enter` na digitação biomecânica, evitando envios prematuros).
+
+### Passo 4: Anexar Mídias ou Documentos (Opcional)
+1. Caso queira enviar imagem, vídeo ou PDF, clique em **"Anexar Arquivo"**.
+2. Selecione a mídia desejada. O motor enviará o arquivo acompanhado da mensagem como legenda personalizada.
+
+### Passo 5: Iniciar Disparos e Acompanhar a Telemetria
+1. Clique no botão **"Iniciar Disparos"**.
+2. Acompanhe a telemetria ao vivo via canal Server-Sent Events (SSE):
+   - Barra de progresso percentual e contadores de sucesso e falha.
+   - Velocidade instantânea em Mensagens por Minuto (MPM) e cálculo de ETA estocástico.
+   - Log em tempo real com o contato atual, atraso de Box-Muller aplicado e confirmação de entrega.
+3. Se necessário, use os botões **"Pausar"** ou **"Cancelar"** a qualquer instante com interrupção graciosa.
+
+### Passo 6: Exportar Relatórios Executivos
+1. Ao concluir o lote (ou após pausar), acesse a seção de Relatórios.
+2. Clique em **"Exportar Excel (.xlsx)"** ou **"Exportar CSV"**.
+3. O relatório conterá todos os números auditados com a formatação correta de texto (sem truncamento do Excel), timestamps de envio e motivos de eventuais falhas (ex: número sem WhatsApp).
+
+---
+
 ## 🧪 Suíte de Testes e Garantia de Qualidade
 
 O projeto possui cobertura extensiva de testes automatizados e testes de estresse adversarial:
@@ -188,7 +251,7 @@ whatsapp_sender_engine/
 │   │   ├── dispatcher_service.py  # Fila anti-ban, digitação biomecânica e Spintax
 │   │   └── reporting_service.py   # Telemetria SSE e relatórios Excel/CSV
 │   ├── static/
-│   │   ├── css/styles.css    # Estilização moderna e modo escuro
+│   │   ├── css/style.css     # Estilização moderna e modo escuro
 │   │   ├── js/app.js         # Interface reativa e integração SSE
 │   │   └── index.html        # Painel de controle completo
 │   └── main.py               # Servidor FastAPI e rotas REST

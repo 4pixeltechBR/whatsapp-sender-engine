@@ -28,6 +28,20 @@ The **WhatsApp Sender Engine** was built from first principles to solve these is
 
 ---
 
+## 💡 Native Playwright vs Evolution API (Why this choice?)
+
+Many developers wonder whether this engine relies on **Evolution API** or WebSocket reverse-engineered libraries (such as Baileys / WPPConnect). **The answer is no.** WhatsApp Sender Engine was deliberately engineered with local, direct **Playwright Chromium Stealth** automation:
+
+| Feature / Metric | WhatsApp Sender Engine (Native Playwright) | Evolution API / Baileys (WebSockets) |
+| :--- | :--- | :--- |
+| **Infrastructure** | **Zero.** Runs directly on Windows/Linux with a 1-click launcher (`.bat`). | Requires a dedicated VPS, Docker, Redis, and PostgreSQL. |
+| **Ban Risk** | **Minimal.** Biomechanical WPM human typing + Box-Muller jitter inside official DOM. | **High.** Robotic instant socket dispatches quickly trigger Meta spam detection. |
+| **Connection Stability** | **High.** Uses the official WhatsApp Web. Meta updates do not break the engine. | **Fragile.** Any handshake or crypto change from Meta breaks connections until patched. |
+| **Data Privacy** | **100% Local.** Sessions and contacts never leave your local machine. | Routes data through external REST APIs and cloud instances. |
+| **Operating Cost** | **Free and unlimited.** | Recurring monthly VPS hosting or SaaS subscription fees. |
+
+---
+
 ## ✨ Key Features
 
 ### 🛡️ 1. Stochastic Anti-Ban Protection (Box-Muller Jitter)
@@ -154,6 +168,55 @@ Open your web browser and navigate to:
 
 ---
 
+## 📖 Step-by-Step Usage Guide (Operation)
+
+Daily operation is engineered to be intuitive, streamlined, and fail-safe:
+
+### Step 1: Launch Application and Connect WhatsApp
+1. Double-click `Iniciar_WhatsApp_Sender.bat` (or execute via command line).
+2. The control dashboard automatically opens in your browser (`http://127.0.0.1:8765`).
+3. Click the **"Conectar WhatsApp"** button.
+4. A dedicated Chromium window will open loading official WhatsApp Web:
+   - **First Time:** Scan the **QR Code** using your phone camera inside WhatsApp.
+   - **Subsequent Runs:** Persistent session storage (`data/session/`) automatically logs in without requiring another QR scan.
+
+### Step 2: Import Contact List
+1. In the **Importar Contatos** section, drag and drop or select your `.xlsx`, `.csv`, or `.txt` file.
+2. The engine performs instant, rigorous sanitization:
+   - Validates area codes against all 67 official Brazilian DDDs.
+   - Normalizes 9th digits and strips carrier routing codes (CSPs) and leading zeros.
+   - Deduplicates records preserving the first occurrence (*First-Wins*).
+3. Inspect the live preview table displaying clean numbers, names, and detected dynamic columns.
+
+### Step 3: Compose Message with Spintax and Tags
+1. Draft your template in the message text area.
+2. **Dynamic Variables:** Inject placeholders such as `{nome}`, `{telefone}`, or any spreadsheet header (e.g., `{empresa}`, `{valor}`).
+3. **Anti-Ban Recursive Spintax:** Alternate greetings and phrases so no two recipients receive identical text:
+   ```text
+   {Olá|Oi|Bom dia} {nome}, tudo bem?
+   Aqui é da {empresa}. Temos uma condição especial para você!
+   ```
+4. For multi-paragraph texts, use `Enter` normally (the biomechanical typing engine automatically uses `Shift+Enter` to prevent premature dispatches).
+
+### Step 4: Attach Media or Documents (Optional)
+1. To dispatch an image, video, or PDF document, click **"Anexar Arquivo"**.
+2. Select your file. The engine dispatches the media along with the personalized message template as the official caption.
+
+### Step 5: Start Queue & Monitor Real-Time Telemetry
+1. Click **"Iniciar Disparos"**.
+2. Monitor live streaming metrics through Server-Sent Events (SSE):
+   - Progress percentage bar and real-time success/failure counters.
+   - Instantaneous speed (Messages Per Minute - MPM) and stochastic dynamic ETA.
+   - Real-time log showing the active contact, Box-Muller jitter applied, and delivery confirmation.
+3. Pause or cancel the run gracefully at any moment using **"Pausar"** or **"Cancelar"**.
+
+### Step 6: Export Executive Reports
+1. Once dispatches are completed (or paused), navigate to the Reports tab.
+2. Click **"Exportar Excel (.xlsx)"** or **"Exportar CSV"**.
+3. The report contains audited records formatted strictly as text (avoiding Excel scientific notation), timestamps, and failure causes (e.g., unregistered WhatsApp numbers).
+
+---
+
 ## 🧪 Test Suite & Quality Assurance
 
 The codebase includes comprehensive unit, integration, and adversarial stress tests:
@@ -187,7 +250,7 @@ whatsapp_sender_engine/
 │   │   ├── dispatcher_service.py  # Anti-ban queue, biomechanical typing & Spintax
 │   │   └── reporting_service.py   # SSE telemetry and Excel/CSV export
 │   ├── static/
-│   │   ├── css/styles.css    # Modern responsive styling & dark mode
+│   │   ├── css/style.css     # Modern responsive styling & dark mode
 │   │   ├── js/app.js         # Reactive client application & SSE logic
 │   │   └── index.html        # Comprehensive desktop UI
 │   └── main.py               # FastAPI server and endpoints
