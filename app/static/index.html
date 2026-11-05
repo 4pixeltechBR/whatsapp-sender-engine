@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Sender Engine — Desktop Suite</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Barra Lateral de Navegação -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+          </svg>
+          <div class="brand-text">
+            <span class="brand-title">WhatsApp Sender</span>
+            <span class="brand-badge">ENGINE M1</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="contacts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Gestão de Contatos</span>
+        </button>
+
+        <button class="nav-item" data-tab="editor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          <span>Editor de Mensagem</span>
+        </button>
+
+        <button class="nav-item" data-tab="dispatcher">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span>Fila & Disparo</span>
+        </button>
+
+        <button class="nav-item" data-tab="connection">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+          </svg>
+          <span>Sessão WhatsApp</span>
+        </button>
+
+        <button class="nav-item" data-tab="reports">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Relatórios</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="session-badge disconnected" id="sidebarSessionStatus">
+          <span class="status-dot"></span>
+          <span class="status-text">Desconectado</span>
+        </div>
+        <button class="theme-toggle" id="themeToggleBtn" title="Alternar Tema Claro/Escuro">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="header-left">
+          <h1 class="page-title" id="pageTitle">Gestão de Contatos</h1>
+          <p class="page-subtitle" id="pageSubtitle">Importação em streaming, sanitização E.164 e deduplicação determinística</p>
+        </div>
+        <div class="header-right">
+          <div class="quick-stats">
+            <span class="quick-stat-badge" id="quickCountBadge">0 contatos carregados</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- TAB 1: GESTÃO DE CONTATOS -->
+      <section class="tab-pane active" id="tab-contacts">
+        <!-- Grid Superior de Ações de Ingestão -->
+        <div class="ingestion-grid">
+          <!-- Dropzone de Arquivos -->
+          <div class="card dropzone-card" id="dropzone">
+            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,.txt" hidden>
+            <div class="dropzone-content">
+              <div class="dropzone-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+              </div>
+              <h3>Importar Planilha de Contatos</h3>
+              <p>Arraste e solte seu arquivo <strong>.xlsx</strong>, <strong>.xls</strong> ou <strong>.csv</strong></p>
+              <button class="btn btn-primary" id="selectFileBtn">Selecionar Arquivo</button>
+              <span class="dropzone-hint">Suporta bases com mais de 50.000 linhas em modo streaming</span>
+            </div>
+          </div>
+
+          <!-- Colagem Manual e Ações Rápidas -->
+          <div class="card manual-card">
+            <div class="card-header">
+              <h3>Entrada Manual Rápida</h3>
+              <span class="badge badge-info">Colar texto</span>
+            </div>
+            <p class="card-desc">Cole listas textuais (um número por linha, ou no formato <code>Nome; Telefone</code>):</p>
+            <textarea id="manualTextarea" class="code-textarea" rows="5" placeholder="João Silva; (62) 99491-2937&#10;Maria Santos, 11988887777&#10;62994912937"></textarea>
+            <div class="card-actions">
+              <button class="btn btn-secondary" id="processManualBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                Processar Contatos Colados
+              </button>
+              <button class="btn btn-ghost" id="loadDemoBtn" title="Carrega contatos de demonstração para teste rápido">Carregar Exemplo</button>
+              <button class="btn btn-ghost" id="clearListBtn">Limpar Lista</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mapeamento de Colunas (Exibido após upload de arquivo) -->
+        <div class="card mapping-card hidden" id="mappingCard">
+          <div class="card-header">
+            <h4>Mapeamento Inteligente de Colunas</h4>
+            <span class="badge badge-success">Auto-detectado</span>
+          </div>
+          <div class="mapping-grid">
+            <div class="form-group">
+              <label for="phoneColSelect">Coluna de Telefone (WhatsApp):</label>
+              <select id="phoneColSelect" class="form-select"></select>
+            </div>
+            <div class="form-group">
+              <label for="nameColSelect">Coluna de Nome do Contato:</label>
+              <select id="nameColSelect" class="form-select"></select>
+            </div>
+            <div class="mapping-actions">
+              <button class="btn btn-sm btn-primary" id="reapplyMappingBtn">Aplicar Mapeamento</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI Cards de Métricas da Base -->
+        <div class="metrics-grid">
+          <div class="metric-card metric-total">
+            <div class="metric-header">
+              <span class="metric-label">Total Lidos</span>
+              <span class="metric-icon">📄</span>
+            </div>
+            <div class="metric-value" id="metricTotalRows">0</div>
+            <div class="metric-sub">Linhas brutas na planilha</div>
+          </div>
+
+          <div class="metric-card metric-valid">
+            <div class="metric-header">
+              <span class="metric-label">Válidos Únicos</span>
+              <span class="metric-icon">✅</span>
+            </div>
+            <div class="metric-value text-success" id="metricValidCount">0</div>
+            <div class="metric-sub">Padrão E.164 Anatel (67 DDDs)</div>
+          </div>
+
+          <div class="metric-card metric-duplicates">
+            <div class="metric-header">
+              <span class="metric-label">Duplicados Descartados</span>
+              <span class="metric-icon">♻️</span>
+            </div>
+            <div class="metric-value text-warning" id="metricDuplicateCount">0</div>
+            <div class="metric-sub">First Wins + merge variáveis</div>
+          </div>
+
+          <div class="metric-card metric-invalid">
+            <div class="metric-header">
+              <span class="metric-label">Inválidos Descartados</span>
+              <span class="metric-icon">⚠️</span>
+            </div>
+            <div class="metric-value text-danger" id="metricInvalidCount">0</div>
+            <div class="metric-sub">DDD inexistente ou incompleto</div>
+          </div>
+
+          <div class="metric-card metric-efficiency">
+            <div class="metric-header">
+              <span class="metric-label">Aproveitamento</span>
+              <span class="metric-icon">📈</span>
+            </div>
+            <div class="metric-value text-primary" id="metricEfficiency">0%</div>
+            <div class="metric-sub">Taxa de contatos aptos</div>
+          </div>
+        </div>
+
+        <!-- Tabela Interativa de Pré-visualização -->
+        <div class="card table-card">
+          <div class="table-toolbar">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="tableSearchInput" placeholder="Buscar por nome, telefone ou variável...">
+            </div>
+            <div class="table-filters">
+              <select id="statusFilterSelect" class="form-select form-select-sm">
+                <option value="ALL">Todos os Registros</option>
+                <option value="VALID" selected>Apenas Válidos</option>
+                <option value="DUPLICATE">Apenas Duplicados</option>
+                <option value="INVALID">Apenas Inválidos</option>
+              </select>
+              <span class="table-pagination-info" id="paginationInfo">Mostrando 0 de 0</span>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table" id="contactsTable">
+              <thead>
+                <tr>
+                  <th width="50">#</th>
+                  <th>Nome</th>
+                  <th>Telefone Bruto</th>
+                  <th>Número E.164 Canônico</th>
+                  <th>Região / DDD</th>
+                  <th>Status</th>
+                  <th>Variáveis Capturadas</th>
+                </tr>
+              </thead>
+              <tbody id="contactsTableBody">
+                <tr class="empty-row">
+                  <td colspan="7" class="text-center py-5">
+                    <div class="empty-state">
+                      <span class="empty-icon">📥</span>
+                      <p>Nenhum contato carregado no momento.</p>
+                      <small>Faça upload de uma planilha ou utilize a entrada manual acima.</small>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-footer">
+            <div class="page-size-selector">
+              <span>Linhas por página:</span>
+              <select id="pageSizeSelect" class="form-select form-select-xs">
+                <option value="10">10</option>
+                <option value="25" selected>25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+            <div class="pagination-controls">
+              <button class="btn btn-sm btn-ghost" id="prevPageBtn" disabled>&laquo; Anterior</button>
+              <span class="page-number" id="currentPageNum">1</span>
+              <button class="btn btn-sm btn-ghost" id="nextPageBtn" disabled>Próxima &raquo;</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: EDITOR DE MENSAGEM -->
+      <section class="tab-pane" id="tab-editor">
+        <div class="editor-grid">
+          <!-- Editor e Variáveis -->
+          <div class="card editor-card">
+            <div class="card-header">
+              <h3>Composição da Mensagem</h3>
+              <span class="badge badge-primary">Spintax & Tags Dinâmicas</span>
+            </div>
+
+            <div class="variable-tags-bar">
+              <span class="tags-label">Inserir variável:</span>
+              <button class="tag-btn" data-tag="{nome}">+ {nome}</button>
+              <button class="tag-btn" data-tag="{primeiro_nome}">+ {primeiro_nome}</button>
+              <button class="tag-btn" data-tag="{saudacao}">+ {saudacao}</button>
+              <button class="tag-btn" data-tag="{telefone}">+ {telefone}</button>
+              <button class="tag-btn" data-tag="{empresa}">+ {empresa}</button>
+              <button class="tag-btn" data-tag="{valor}">+ {valor}</button>
+            </div>
+
+            <div class="spintax-helper-bar">
+              <span class="spintax-label">Spintax Anti-Ban:</span>
+              <button class="spintax-sample-btn" data-spintax="{Olá|Oi|E aí|Tudo bem?}">Exemplo Saudação</button>
+              <button class="spintax-sample-btn" data-spintax="{passando para avisar|gostaria de compartilhar|notícia importante}">Exemplo Frase</button>
+            </div>
+
+            <textarea id="messageTemplate" class="message-editor-textarea" rows="9" placeholder="Olá {primeiro_nome}, {saudacao}!&#10;&#10;{Gostaríamos de apresentar|Confira} nossa nova proposta personalizada para a sua empresa {empresa}.&#10;&#10;Qualquer dúvida estamos à disposição!"></textarea>
+
+            <div class="editor-status-bar">
+              <div class="char-counters">
+                <span id="charCount">0 caracteres</span>
+                <span class="dot-separator">•</span>
+                <span id="wordCount">0 palavras</span>
+                <span class="dot-separator">•</span>
+                <span id="estimatedTypingTime">~0s digitação humana</span>
+              </div>
+              <button class="btn btn-sm btn-secondary" id="testSpintaxBtn">Testar Variação Spintax</button>
+            </div>
+
+            <div class="attachment-section">
+              <label class="form-label">Anexo de Mídia (Opcional):</label>
+              <div class="attachment-box">
+                <input type="file" id="attachmentInput" accept="image/*,.pdf,.docx,.xlsx" hidden>
+                <button class="btn btn-sm btn-ghost" id="selectAttachmentBtn">📎 Adicionar Imagem ou Arquivo</button>
+                <span id="attachmentName" class="attachment-filename">Nenhum arquivo anexado</span>
+                <button class="btn btn-xs btn-danger hidden" id="removeAttachmentBtn">Remover</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview Realista do WhatsApp -->
+          <div class="card preview-card">
+            <div class="preview-header">
+              <div class="preview-avatar">WA</div>
+              <div class="preview-user-info">
+                <span class="preview-name" id="previewContactName">João Silva</span>
+                <span class="preview-phone" id="previewContactPhone">+55 (62) 99491-2937</span>
+              </div>
+            </div>
+            <div class="whatsapp-mockup-body">
+              <div class="whatsapp-bubble">
+                <div class="whatsapp-message-text" id="whatsappPreviewText">
+                  Olá João, Bom dia!<br><br>
+                  Confira nossa nova proposta personalizada para a sua empresa Fractal.<br><br>
+                  Qualquer dúvida estamos à disposição!
+                </div>
+                <div class="whatsapp-message-time">
+                  <span id="previewTimestamp">10:45</span>
+                  <svg class="check-double" viewBox="0 0 16 15" width="16" height="15"><path fill="#4fc3f7" d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.879a.32.32 0 0 1-.484.033l-.358-.325a.319.319 0 0 0-.484.032l-.378.483a.418.418 0 0 0 .036.541l1.32 1.266c.143.14.361.125.484-.033l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.879a.32.32 0 0 1-.484.033L1.891 7.769a.366.366 0 0 0-.515.006l-.423.433a.364.364 0 0 0 .006.514l3.258 3.185c.143.14.361.125.484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="preview-footer-note">
+              Visualização aproximada da renderização para o primeiro contato selecionado.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: DISPARO & FILA -->
+      <section class="tab-pane" id="tab-dispatcher">
+        <!-- Controles Principais de Fila -->
+        <div class="card controls-card">
+          <div class="controls-toolbar">
+            <div class="queue-status-indicator">
+              <span class="status-badge-lg badge-idle" id="queueStateBadge">FILA OCIOSA</span>
+              <span class="queue-eta" id="queueEtaDisplay">ETA: --:--:--</span>
+            </div>
+            <div class="action-buttons-group">
+              <button class="btn btn-lg btn-success" id="startCampaignBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Iniciar Disparo
+              </button>
+              <button class="btn btn-lg btn-warning" id="pauseCampaignBtn" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                Pausar
+              </button>
+              <button class="btn btn-lg btn-info" id="resumeCampaignBtn" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Continuar
+              </button>
+              <button class="btn btn-lg btn-danger" id="abortCampaignBtn" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                Abortar
+              </button>
+            </div>
+          </div>
+
+          <!-- Barra de Progresso Real-time -->
+          <div class="progress-section">
+            <div class="progress-labels">
+              <span id="progressPercentLabel">Progresso: 0%</span>
+              <span id="progressFractionLabel">0 / 0 enviados</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Contato em Trânsito / Status Instantâneo -->
+          <div class="current-contact-banner" id="currentContactBanner" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-top: 14px; font-size: 0.875rem;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="pulse-dot" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--whatsapp-green);"></span>
+              <span>Contato Atual:</span>
+              <strong id="currentContactText" style="color: var(--text-primary);">Aguardando início do disparo...</strong>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-xs btn-primary" id="quickExportXlsxBtn" title="Download imediato do relatório Excel">📊 Exportar .xlsx</button>
+              <button class="btn btn-xs btn-secondary" id="quickExportCsvBtn" title="Download imediato do relatório CSV">📑 Exportar .csv</button>
+            </div>
+          </div>
+
+          <!-- Parâmetros Configuráveis de Cadência Anti-Ban -->
+          <div class="antiban-config-bar" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; padding: 12px 16px; background: rgba(15, 23, 42, 0.45); border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-top: 12px; font-size: 0.8rem;">
+            <div>
+              <label for="campaignTitleInput" style="display:block; color: var(--text-muted); margin-bottom: 4px;">Título da Campanha</label>
+              <input type="text" id="campaignTitleInput" class="search-input" value="Campanha WhatsApp Bulk" style="width: 100%; padding: 6px 10px;">
+            </div>
+            <div>
+              <label for="jitterMinInput" style="display:block; color: var(--text-muted); margin-bottom: 4px;">Delay Mínimo (seg)</label>
+              <input type="number" id="jitterMinInput" class="search-input" value="10" min="1" max="60" step="1" style="width: 100%; padding: 6px 10px;">
+            </div>
+            <div>
+              <label for="jitterMaxInput" style="display:block; color: var(--text-muted); margin-bottom: 4px;">Delay Máximo (seg)</label>
+              <input type="number" id="jitterMaxInput" class="search-input" value="25" min="2" max="120" step="1" style="width: 100%; padding: 6px 10px;">
+            </div>
+            <div>
+              <label for="batchSizeInput" style="display:block; color: var(--text-muted); margin-bottom: 4px;">Pausa a cada (envios)</label>
+              <input type="number" id="batchSizeInput" class="search-input" value="20" min="5" max="100" step="1" style="width: 100%; padding: 6px 10px;">
+            </div>
+            <div>
+              <label for="batchPauseInput" style="display:block; color: var(--text-muted); margin-bottom: 4px;">Tempo de Pausa (seg)</label>
+              <input type="number" id="batchPauseInput" class="search-input" value="120" min="5" max="600" step="5" style="width: 100%; padding: 6px 10px;">
+            </div>
+          </div>
+
+          <!-- Telemetria Ao Vivo -->
+          <div class="telemetry-grid">
+            <div class="telemetry-item">
+              <span class="telemetry-num text-success" id="telemetrySent">0</span>
+              <span class="telemetry-lbl">Enviados com Sucesso</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-num text-danger" id="telemetryFailed">0</span>
+              <span class="telemetry-lbl">Falhas Registradas</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-num text-info" id="telemetryPending">0</span>
+              <span class="telemetry-lbl">Pendentes na Fila</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-num" id="telemetrySpeed">0.0</span>
+              <span class="telemetry-lbl">Velocidade (msgs/min)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabela de Log Estruturado por Contato em Tempo Real -->
+        <div class="card log-table-card" style="margin-bottom: 20px;">
+          <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <h3>Log Estruturado por Contato (Tempo Real)</h3>
+              <span class="badge badge-success" id="liveContactLogBadge">0 registros</span>
+            </div>
+            <span class="badge badge-info">Colunas: Numero • Status • DataHora • Detalhes</span>
+          </div>
+          <div class="table-container" style="max-height: 240px; overflow-y: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">#</th>
+                  <th style="width: 160px;">Número</th>
+                  <th style="width: 180px;">Nome</th>
+                  <th style="width: 160px;">Data/Hora</th>
+                  <th style="width: 120px;">Status</th>
+                  <th>Detalhes do Envio</th>
+                </tr>
+              </thead>
+              <tbody id="liveContactsLogBody">
+                <tr class="empty-row">
+                  <td colspan="6" class="text-center py-4 text-muted">Aguardando início dos envios para exibir os registros em tempo real...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Log de Atividade em Tempo Real (Terminal de Sistema) -->
+        <div class="card log-card">
+          <div class="card-header">
+            <h3>Terminal de Telemetria e Logs do Sistema</h3>
+            <span class="badge badge-info">Eventos SSE</span>
+          </div>
+          <div class="log-terminal" id="logTerminal">
+            <div class="log-line log-info">[INFO] Sistema inicializado. Aguardando comando de disparo...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: CONEXÃO WHATSAPP -->
+      <section class="tab-pane" id="tab-connection">
+        <div class="card connection-card">
+          <div class="card-header">
+            <h3>Sessão Oficial WhatsApp Web</h3>
+            <span class="badge badge-danger" id="connectionBadge">Desconectado</span>
+          </div>
+          <div class="connection-layout">
+            <div class="qr-container" id="qrContainer">
+              <div class="qr-placeholder" id="qrPlaceholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <p>Clique abaixo para abrir o WhatsApp Web</p>
+              </div>
+            </div>
+            <div class="connection-instructions">
+              <h4>Como autenticar:</h4>
+              <ol>
+                <li>Abra o WhatsApp no seu smartphone.</li>
+                <li>Toque em <strong>Menu</strong> (Android) ou <strong>Configurações</strong> (iPhone).</li>
+                <li>Toque em <strong>Aparelhos Conectados</strong> e depois em <strong>Conectar um aparelho</strong>.</li>
+                <li>Aponte o celular para a janela do navegador embutido ou para o QR Code acima.</li>
+              </ol>
+              <div class="connection-actions">
+                <button class="btn btn-primary" id="openBrowserBtn">Iniciar Navegador WhatsApp Web</button>
+                <button class="btn btn-ghost" id="checkSessionBtn">Verificar Conexão</button>
+                <button class="btn btn-danger hidden" id="closeBrowserBtn">Encerrar Navegador</button>
+              </div>
+              <p class="session-note">Sua sessão é salva em <code>data/session</code> e não exigirá novo QR Code nas próximas reinicializações.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: RELATÓRIOS -->
+      <section class="tab-pane" id="tab-reports">
+        <div class="card reports-card">
+          <div class="card-header">
+            <h3>Exportação de Relatórios de Campanha</h3>
+            <span class="badge badge-success">Exportação em 1 Clique</span>
+          </div>
+          <p class="card-desc">Gere relatórios executivos com formato de texto (@) no Excel (sem conversão de dígitos) e CSV com BOM (utf-8-sig) para compatibilidade instantânea:</p>
+
+          <div class="export-actions-grid">
+            <div class="export-card">
+              <div class="export-icon">📊</div>
+              <h4>Relatório Excel (.xlsx)</h4>
+              <p>Planilha profissional com colunas protegidas contra notação científica e dashboard executivo (aba Resumo_Executivo).</p>
+              <button class="btn btn-primary" id="exportXlsxBtn">Exportar para Excel (.xlsx)</button>
+            </div>
+
+            <div class="export-card">
+              <div class="export-icon">📑</div>
+              <h4>Relatório CSV Universal</h4>
+              <p>Arquivo delimitado por ponto-e-vírgula com encoding utf-8-sig para abertura direta no Windows sem erro de acentos.</p>
+              <button class="btn btn-secondary" id="exportCsvBtn">Exportar para CSV (.csv)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resumo Executivo KPIs -->
+        <div class="card summary-kpis-card mt-4" style="margin-top: 20px;">
+          <div class="card-header">
+            <h3>Resumo Executivo da Campanha</h3>
+            <span class="badge badge-primary" id="reportCampaignTitleBadge">Campanha Ativa</span>
+          </div>
+          <div class="telemetry-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-top: 15px;">
+            <div class="telemetry-item">
+              <span class="telemetry-num" id="reportTotalContacts">0</span>
+              <span class="telemetry-lbl">Total de Contatos</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-num text-success" id="reportSentSuccess">0</span>
+              <span class="telemetry-lbl">Enviados com Sucesso</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-num text-danger" id="reportFailed">0</span>
+              <span class="telemetry-lbl">Falhas / Sem WhatsApp</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-num text-warning" id="reportCancelled">0</span>
+              <span class="telemetry-lbl">Cancelados / Abortados</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-num text-primary" id="reportDeliveryRate">0.0%</span>
+              <span class="telemetry-lbl">Taxa de Entrega (%)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
