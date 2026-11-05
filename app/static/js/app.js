@@ -1075,8 +1075,8 @@
       });
     }
 
-    // Filtros e Busca na Tabela
-    if (dom.tableSearchInput) dom.tableSearchInput.addEventListener('input', applyTableFilters);
+    // Filtros e Busca na Tabela (com debounce para alta performance em listas longas)
+    if (dom.tableSearchInput) dom.tableSearchInput.addEventListener('input', debounce(applyTableFilters, 250));
     if (dom.statusFilterSelect) dom.statusFilterSelect.addEventListener('change', applyTableFilters);
     if (dom.pageSizeSelect) {
       dom.pageSizeSelect.addEventListener('change', (e) => {
@@ -1139,7 +1139,7 @@
 
   function setupEditorEvents() {
     if (dom.messageTemplate) {
-      dom.messageTemplate.addEventListener('input', updateMessagePreview);
+      dom.messageTemplate.addEventListener('input', debounce(updateMessagePreview, 150));
     }
 
     dom.tagButtons.forEach((btn) => {
@@ -1237,6 +1237,14 @@
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+  }
+
+  function debounce(fn, wait) {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn.apply(this, args), wait);
+    };
   }
 
   // ============================================================================
